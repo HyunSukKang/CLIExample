@@ -1,5 +1,7 @@
 package edu.handong.csee.java.examples;
 
+import java.io.File;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -11,6 +13,7 @@ public class Runner {
 	
 	String path;
 	boolean verbose;
+	String fullpath;
 	boolean help;
 
 	public static void main(String[] args) {
@@ -22,22 +25,30 @@ public class Runner {
 
 	private void run(String[] args) {
 		Options options = createOptions();
-		
+		int count = 0;
 		if(parseOptions(options, args)){
 			if (help){
 				printHelp(options);
 				return;
 			}
 			
-			// path is required (necessary) data so no need to have a branch.
-			System.out.println("You provided \"" + path + "\" as the value of the option p");
+			
+//			System.out.println("You provided \"" + path + "\" as the value of the option p");
+			
 			
 			// TODO show the number of files in the path
-			
+			File file = new File(fullpath);
+			System.out.println(file.getAbsolutePath());
+			for(File f : file.listFiles()) count++;
+			System.out.println("The number of files in the path : " + count);
+					
 			if(verbose) {
 				
 				// TODO list all files in the path
-				
+				String[] fileList = file.list();
+				for(String s:fileList) {
+					System.out.println(s);
+				}
 				System.out.println("Your program is terminated. (This message is shown because you turned on -v option!");
 			}
 		}
@@ -52,6 +63,7 @@ public class Runner {
 
 			path = cmd.getOptionValue("p");
 			verbose = cmd.hasOption("v");
+			fullpath = cmd.getOptionValue("f");
 			help = cmd.hasOption("h");
 
 		} catch (Exception e) {
@@ -71,7 +83,7 @@ public class Runner {
 				.desc("Set a path of a directory or a file to display")
 				.hasArg()
 				.argName("Path name to display")
-				.required()
+//				.required()
 				.build());
 
 		// add options by using OptionBuilder
@@ -80,6 +92,13 @@ public class Runner {
 				//.hasArg()     // this option is intended not to have an option value but just an option
 				.argName("verbose option")
 				//.required() // this is an optional option. So disabled required().
+				.build());
+		
+		options.addOption(Option.builder("f").longOpt("fullpath")
+				.desc("Print out full path of the files in the directory.")
+				.hasArg()
+				.argName("Full Path")
+//				.required()
 				.build());
 		
 		// add options by using OptionBuilder
